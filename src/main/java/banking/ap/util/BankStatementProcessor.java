@@ -4,6 +4,7 @@ import banking.ap.domain.BankTransaction;
 import lombok.AllArgsConstructor;
 
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -38,6 +39,16 @@ public class BankStatementProcessor {
             }
         }
         return total;
+    }
+
+    public List<BankTransaction> findTransactions(final BankTransactionFilter bankTransactionFilter) {
+        final List<BankTransaction> result = new ArrayList<>();
+        for (BankTransaction transaction : transactions) {
+            if (bankTransactionFilter.test(transaction)) {
+                result.add(transaction);
+            }
+        }
+        return result;
     }
 
 }
