@@ -12,33 +12,20 @@ public class BankStatementProcessor {
 
     private final List<BankTransaction> transactions;
 
-
-    public double calculateTotalAmount() {
-        double total = 0d;
-        for (final BankTransaction transaction : transactions) {
-            total += transaction.getAmount();
+    public double summarizeTransactions(final BankTransactionSummarizer bankTransactionSummarizer) {
+        double result = 0;
+        for (BankTransaction transaction : transactions) {
+            result = bankTransactionSummarizer.summarize(result, transaction);
         }
-        return total;
+        return result;
     }
 
     public double calculateTotalInMonth(final Month month) {
-        double total = 0d;
-        for (final BankTransaction transaction : transactions) {
-            if (transaction.getDate().getMonth() == month) {
-                total += transaction.getAmount();
-            }
-        }
-        return total;
+        return summarizeTransactions((accumulator, bankTransaction) -> bankTransaction.getDate().getMonth() == month ? accumulator + bankTransaction.getAmount() : accumulator);
     }
 
     public double calculateTotalForCategory(final String category) {
-        double total = 0d;
-        for (final BankTransaction transaction : transactions) {
-            if (transaction.getDescription().equals(category)) {
-                total += transaction.getAmount();
-            }
-        }
-        return total;
+        return summarizeTransactions((accumulator, bankTransaction) -> bankTransaction.getDescription().equals(category) ? accumulator + bankTransaction.getAmount() : accumulator);
     }
 
     public List<BankTransaction> findTransactions(final BankTransactionFilter bankTransactionFilter) {
@@ -49,6 +36,10 @@ public class BankStatementProcessor {
             }
         }
         return result;
+    }
+
+    public List<BankTransaction> findTransactionGreaterThanEqual(final int amount) {
+        return findTransactions(bankTransaction -> bankTransaction.getAmount() >= amount);
     }
 
 }

@@ -18,12 +18,11 @@ public class BankStatementAnalyzer {
 
         final List<BankTransaction> bankTransactions = bankStatementParser.parseLinesFrom(lines);
         final BankStatementProcessor bankStatementProcessor = new BankStatementProcessor(bankTransactions);
-        final List<BankTransaction> expensiveTransactions = bankStatementProcessor.findTransactions(bankTransactionFilter);
+        final List<BankTransaction> expensiveTransactions = bankStatementProcessor.findTransactions(bankTransaction -> bankTransaction.getDate().getMonth() == Month.APRIL && bankTransaction.getAmount() > 1_000);
         collectSummary(bankStatementProcessor);
     }
 
     private void collectSummary(BankStatementProcessor bankStatementProcessor) {
-        System.out.println("The total for all transactions is " +bankStatementProcessor.calculateTotalAmount());
         System.out.println("Transactions in January " +bankStatementProcessor.calculateTotalInMonth(Month.JANUARY));
         System.out.println("Transactions for furniture category " +bankStatementProcessor.calculateTotalForCategory("furniture"));
     }
