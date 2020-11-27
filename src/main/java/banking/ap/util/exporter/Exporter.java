@@ -1,4 +1,4 @@
-package banking.ap.util;
+package banking.ap.util.exporter;
 
 import banking.ap.domain.SummaryStatistics;
 

@@ -1,6 +1,8 @@
 package banking.ap.util;
 
 import banking.ap.domain.BankTransaction;
+import banking.ap.util.validator.BankStatementValidator;
+import banking.ap.util.validator.Notification;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,10 +15,18 @@ public class BankStatementCSVParser implements BankStatementParser {
     @Override
     public BankTransaction parserFrom(String line) {
         final String[] columns = line.split(",");
-        final LocalDate date = LocalDate.parse(columns[0], DATE_PATTERN);
-        final double amount = Double.parseDouble(columns[1]);
-        final String description = columns[2];
-        return new BankTransaction(date, amount, description);
+        String desc = columns[2];
+        String dt = columns[0];
+        String amnt = columns[1];
+        final BankStatementValidator bankStatementValidator = new BankStatementValidator(desc, dt, amnt);
+        Notification notification = bankStatementValidator.validate();
+        if (notification.hasErrors()) {
+            notification.errorMessage();
+
+        }
+        final LocalDate date = LocalDate.parse(dt, DATE_PATTERN);
+        final double amount = Double.parseDouble(amnt);
+        return new BankTransaction(date, amount, desc);
     }
 
     @Override
